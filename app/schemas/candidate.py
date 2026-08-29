@@ -31,9 +31,9 @@ class Platform(str, Enum):
 
 class Recommendation(str, Enum):
     """Business recommendation tiers."""
-    ONBOARD = "ONBOARD"
-    HOLD = "HOLD"
-    PASS = "PASS"
+    APPROVE = "APPROVE"
+    REVIEW = "REVIEW"
+    DECLINE = "DECLINE"
 
 
 class DataQuality(str, Enum):

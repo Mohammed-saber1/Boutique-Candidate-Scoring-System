@@ -8,9 +8,9 @@ so the system must be selective.  Thresholds are defined in
 
 | Score Range | Recommendation | Logic |
 |-------------|----------------|-------|
-| ≥ 70        | **ONBOARD**    | Top candidates — high fit signals across GCC audience, category, and engagement. |
-| 50 – 69     | **HOLD**       | Promising but not clear-cut — request additional data or manual review. |
-| < 50        | **PASS**       | Weak fit — do not allocate limited onboarding effort. |
+| ≥ 70        | **APPROVE**    | Top candidates — high fit signals across GCC audience, category, and engagement. |
+| 50 – 69     | **REVIEW**     | Promising but not clear-cut — request additional data or manual review. |
+| < 50        | **DECLINE**    | Weak fit — do not allocate limited onboarding effort. |
 
 Each recommendation includes a concrete, actionable next-step message
 that Celebrity Management can act on immediately.
@@ -24,15 +24,15 @@ from app.schemas.candidate import Recommendation
 
 # Actionable messages per tier
 _ACTIONS = {
-    Recommendation.ONBOARD: (
+    Recommendation.APPROVE: (
         "Prioritize this candidate for Celebrity Management outreach. "
         "Initiate preliminary terms discussion."
     ),
-    Recommendation.HOLD: (
+    Recommendation.REVIEW: (
         "Request deeper audience analytics and review recent content "
         "quality before allocating onboarding capacity."
     ),
-    Recommendation.PASS: (
+    Recommendation.DECLINE: (
         "Do not prioritize for onboarding at this stage. "
         "Re-evaluate if the candidate's profile evolves significantly."
     ),
@@ -53,9 +53,9 @@ def recommend(score: int) -> tuple[Recommendation, str]:
         (recommendation enum, next-action message)
     """
     if score >= ONBOARD_THRESHOLD:
-        rec = Recommendation.ONBOARD
+        rec = Recommendation.APPROVE
     elif score >= HOLD_THRESHOLD:
-        rec = Recommendation.HOLD
+        rec = Recommendation.REVIEW
     else:
-        rec = Recommendation.PASS
+        rec = Recommendation.DECLINE
     return rec, _ACTIONS[rec]

@@ -371,9 +371,9 @@
     badge.className = 'recommendation-badge__tag ' + data.recommendation.toLowerCase();
 
     const subtitles = {
-      ONBOARD: 'Strong Boutique fit — prioritize outreach',
-      HOLD: 'Promising but needs further evaluation',
-      PASS: 'Weak fit — do not allocate onboarding capacity'
+      APPROVE: 'Strong Boutique fit — prioritize outreach',
+      REVIEW: 'Promising but needs further evaluation',
+      DECLINE: 'Weak fit — do not allocate onboarding capacity'
     };
     document.getElementById('recSubtitle').textContent = subtitles[data.recommendation] || '';
 

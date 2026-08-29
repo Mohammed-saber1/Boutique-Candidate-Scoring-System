@@ -657,22 +657,22 @@ textarea:focus-visible {
   letter-spacing: 0.14em;
 }
 
-.recommendation-badge__tag.onboard {
+.recommendation-badge__tag.approve {
   border-color: rgba(66, 211, 146, 0.38);
-  background: rgba(66, 211, 146, 0.1);
-  color: var(--green);
+  background: rgba(34, 217, 127, 0.1);
+  color: #22d97f;
 }
 
-.recommendation-badge__tag.hold {
+.recommendation-badge__tag.review {
   border-color: rgba(244, 184, 96, 0.4);
-  background: rgba(244, 184, 96, 0.1);
-  color: var(--amber);
+  background: rgba(255, 179, 66, 0.1);
+  color: #ffb342;
 }
 
-.recommendation-badge__tag.pass {
+.recommendation-badge__tag.decline {
   border-color: rgba(255, 107, 127, 0.4);
-  background: rgba(255, 107, 127, 0.1);
-  color: var(--red);
+  background: rgba(255, 68, 102, 0.1);
+  color: #ff4466;
 }
 
 .recommendation-badge__subtitle {

@@ -2,6 +2,8 @@
 
 > **Prototype Assessment** — A production-minded prototype for evaluating prospective influencers as Boutiqaat Boutique owners.
 
+🎥 **[Watch the Video Demo](https://drive.google.com/file/d/1bhkbEvSOMp8ob2frzlwjF7caeT8APEvd/view?usp=sharing)**
+
 ---
 
 ## 1. Project Overview
@@ -11,7 +13,7 @@ This system scores prospective influencers on their likely fitness as Boutiqaat 
 1. A **fit score** from 0–100
 2. The **key signals** driving the score (positive and negative)
 3. **Risks** and negative signals
-4. A concrete **recommendation**: `ONBOARD`, `HOLD`, or `PASS`
+4. A concrete **recommendation**: `APPROVE`, `REVIEW`, or `DECLINE`
 5. A clear **business action** for Celebrity Management
 
 ## 2. Business Problem
@@ -44,7 +46,7 @@ The system is designed as a clean pipeline with explicit separation of concerns:
 - **`app/schemas/` (Data Validation Layer)**: Uses Pydantic to enforce strict type checking and constraint validation on incoming profiles.
 - **`app/features/` (Feature Pipeline Layer)**: Safely extracts raw data and contains the core mathematical logic for computing derived features like `engagement_quality` and `gcc_market_fit`. **Every function here is extensively documented with its mathematical formula.**
 - **`app/models/` (Machine Learning Layer)**: Contains training logic (`train.py`) and a singleton prediction wrapper (`predictor.py`) utilizing scikit-learn.
-- **`app/scoring/` (Business Logic Layer)**: Maps probabilities to fit scores and handles the business tiering logic (`ONBOARD`, `HOLD`, `PASS`).
+- **`app/scoring/` (Business Logic Layer)**: Maps probabilities to fit scores and handles the business tiering logic (`APPROVE`, `REVIEW`, `DECLINE`).
 - **`app/explainability/` (Transparency Layer)**: Deconstructs the Logistic Regression model's predictions into exact coefficient contributions, ensuring stakeholder trust.
 - **`app/web/` (Presentation Layer)**: A lightweight Flask server exposing the scoring pipeline via a beautiful, glassmorphic GUI.
 - **`app/config.py` (Configuration)**: The central brain of the system's business rules. All weights and thresholds are stored here for easy auditing.
@@ -140,9 +142,9 @@ Each term `βᵢ·xᵢ` (coefficient × scaled feature value) is the contributio
 
 | Score | Recommendation | Action |
 |-------|---------------|--------|
-| ≥ 70 | **ONBOARD** | Prioritize for Celebrity Management outreach |
-| 50–69 | **HOLD** | Request deeper audience analytics before allocating capacity |
-| < 50 | **PASS** | Do not prioritize for onboarding at this stage |
+| ≥ 70 | **APPROVE** | Prioritize for Celebrity Management outreach |
+| 50–69 | **REVIEW** | Request deeper audience analytics before allocating capacity |
+| < 50 | **DECLINE** | Do not prioritize for onboarding at this stage |
 
 ## 12. How to Run
 
