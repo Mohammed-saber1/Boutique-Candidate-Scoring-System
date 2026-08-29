@@ -1,0 +1,479 @@
+<!-- ==========================================================================
+     BOUTIQAAT CANDIDATE SCORING SYSTEM
+     ==========================================================================
+     File: index.html
+     Description: The main presentation layer for the Boutique Candidate Scoring 
+                  System. Implements a responsive, glassmorphic UI that submits 
+                  influencer metrics to the Flask backend and visualizes the 
+                  resulting scores, recommendations, and explainability data.
+     ========================================================================== -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Boutique Candidate Scoring System — Evaluate influencers for Boutiqaat Boutique fitness">
+  <title>Boutique Candidate Scoring | Boutiqaat</title>
+  <link rel="stylesheet" href="../static/css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="header">
+      <div class="brand-mark" aria-hidden="true">B</div>
+      <div class="header__eyebrow">Boutiqaat intelligence</div>
+      <h1 class="header__title">Candidate fit assessment</h1>
+      <p class="header__subtitle">Evaluate influencer quality, audience relevance, and commercial fit in one clear workspace.</p>
+    </header>
+
+    <main class="workspace">
+      <section class="surface form-section" aria-labelledby="profile-title">
+        <div class="section-header">
+          <div>
+            <p class="section-kicker">Candidate input</p>
+            <h2 class="section-heading" id="profile-title">Build a candidate profile</h2>
+            <p class="section-copy">Complete the available fields or start with a representative sample.</p>
+          </div>
+          <div class="sample-buttons" aria-label="Sample candidate profiles">
+            <button type="button" class="btn-sample strong" onclick="loadSample('strong')"><span class="sample-dot"></span>Strong sample</button>
+            <button type="button" class="btn-sample weak" onclick="loadSample('weak')"><span class="sample-dot"></span>Weak sample</button>
+          </div>
+        </div>
+
+        <form id="candidateForm" onsubmit="scoreCandidate(event)">
+          <fieldset class="form-block">
+            <legend>Profile</legend>
+            <div class="form-grid form-grid--profile">
+              <div class="form-group">
+                <label for="handle">Handle <span aria-hidden="true">*</span></label>
+                <input type="text" id="handle" placeholder="@creator_name" autocomplete="off" required>
+              </div>
+              <div class="form-group">
+                <label for="platform">Platform</label>
+                <select id="platform">
+                  <option value="instagram">Instagram</option>
+                  <option value="tiktok">TikTok</option>
+                  <option value="youtube">YouTube</option>
+                  <option value="snapchat">Snapchat</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="followers">Followers <span aria-hidden="true">*</span></label>
+                <input type="number" id="followers" placeholder="850,000" min="0" required>
+              </div>
+              <div class="form-group form-group--wide">
+                <label for="description">Candidate overview <span class="optional">Optional</span></label>
+                <textarea id="description" placeholder="Summarize the creator's content, audience, and potential brand fit."></textarea>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="form-block">
+            <legend>Engagement metrics</legend>
+            <div class="form-grid form-grid--three">
+              <div class="form-group">
+                <label for="average_likes">Average likes</label>
+                <input type="number" id="average_likes" placeholder="32,000" min="0">
+              </div>
+              <div class="form-group">
+                <label for="average_comments">Average comments</label>
+                <input type="number" id="average_comments" placeholder="850" min="0">
+              </div>
+              <div class="form-group">
+                <label for="average_views">Average views</label>
+                <input type="number" id="average_views" placeholder="150,000" min="0">
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="form-block">
+            <legend>Audience composition <span class="legend-unit">%</span></legend>
+            <div class="form-grid form-grid--four">
+              <div class="form-group">
+                <label for="gcc_audience_pct">GCC audience</label>
+                <input type="number" id="gcc_audience_pct" placeholder="81" min="0" max="100" step="0.1">
+              </div>
+              <div class="form-group">
+                <label for="saudi_audience_pct">Saudi audience</label>
+                <input type="number" id="saudi_audience_pct" placeholder="52" min="0" max="100" step="0.1">
+              </div>
+              <div class="form-group">
+                <label for="uae_audience_pct">UAE audience</label>
+                <input type="number" id="uae_audience_pct" placeholder="18" min="0" max="100" step="0.1">
+              </div>
+              <div class="form-group">
+                <label for="female_audience_pct">Female audience</label>
+                <input type="number" id="female_audience_pct" placeholder="72" min="0" max="100" step="0.1">
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="form-block">
+            <legend>Content mix <span class="legend-unit">%</span></legend>
+            <div class="form-grid form-grid--four">
+              <div class="form-group">
+                <label for="beauty_content_pct">Beauty</label>
+                <input type="number" id="beauty_content_pct" placeholder="45" min="0" max="100" step="0.1">
+              </div>
+              <div class="form-group">
+                <label for="fashion_content_pct">Fashion</label>
+                <input type="number" id="fashion_content_pct" placeholder="30" min="0" max="100" step="0.1">
+              </div>
+              <div class="form-group">
+                <label for="luxury_content_pct">Luxury</label>
+                <input type="number" id="luxury_content_pct" placeholder="15" min="0" max="100" step="0.1">
+              </div>
+              <div class="form-group">
+                <label for="lifestyle_content_pct">Lifestyle</label>
+                <input type="number" id="lifestyle_content_pct" placeholder="10" min="0" max="100" step="0.1">
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="form-block">
+            <legend>Quality signals</legend>
+            <div class="form-grid form-grid--three">
+              <div class="form-group">
+                <label for="sponsored_content_pct">Sponsored content (%)</label>
+                <input type="number" id="sponsored_content_pct" placeholder="20" min="0" max="100" step="0.1">
+              </div>
+              <div class="form-group">
+                <label for="content_consistency_score">Consistency (0–1)</label>
+                <input type="number" id="content_consistency_score" placeholder="0.82" min="0" max="1" step="0.01">
+              </div>
+              <div class="form-group">
+                <label for="comment_quality_score">Comment quality (0–1)</label>
+                <input type="number" id="comment_quality_score" placeholder="0.88" min="0" max="1" step="0.01">
+              </div>
+            </div>
+          </fieldset>
+
+          <div class="form-actions">
+            <p>Fields without values use the model's safe defaults.</p>
+            <button type="submit" class="btn-score" id="scoreBtn">Score candidate <span aria-hidden="true">→</span></button>
+          </div>
+        </form>
+      </section>
+
+      <section class="results-section" aria-label="Candidate assessment results">
+        <div class="surface placeholder" id="placeholder">
+          <div class="placeholder__icon" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </div>
+          <div class="placeholder__text">Your assessment will appear here</div>
+          <div class="placeholder__hint">Enter a profile above, then score the candidate.</div>
+        </div>
+
+        <div class="results-panel" id="results">
+          <div class="surface score-hero">
+            <div class="score-hero__intro">
+              <p class="section-kicker">Assessment result</p>
+              <h2 class="section-heading">Candidate fit score</h2>
+            </div>
+            <div class="score-summary">
+              <div class="score-gauge">
+                <svg viewBox="0 0 170 170" role="img" aria-label="Candidate score out of 100">
+                  <circle class="score-gauge__track" cx="85" cy="85" r="75" />
+                  <circle class="score-gauge__fill" id="gaugeCircle" cx="85" cy="85" r="75" />
+                </svg>
+                <div class="score-gauge__value">
+                  <div class="score-gauge__number" id="scoreNumber">—</div>
+                  <div class="score-gauge__label">out of 100</div>
+                </div>
+              </div>
+
+              <div class="score-details">
+                <div class="score-info-row">
+                  <div class="score-info-item">
+                    <div class="score-info-item__label">Candidate</div>
+                    <div class="score-info-item__value" id="resultHandle">—</div>
+                  </div>
+                  <div class="score-info-item">
+                    <div class="score-info-item__label">Platform</div>
+                    <div class="score-info-item__value" id="resultPlatform">—</div>
+                  </div>
+                  <div class="score-info-item">
+                    <div class="score-info-item__label">Success probability</div>
+                    <div class="score-info-item__value" id="resultProb">—</div>
+                  </div>
+                </div>
+
+                <div class="recommendation-badge">
+                  <div class="recommendation-badge__tag" id="recBadge">—</div>
+                  <div class="recommendation-badge__subtitle" id="recSubtitle"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="surface" id="descriptionCard" style="display:none;">
+            <div class="card-title"><span class="title-mark"></span>Candidate overview</div>
+            <div class="description-display" id="descriptionText"></div>
+          </div>
+
+          <div class="drivers-grid">
+            <div class="surface">
+              <div class="card-title"><span class="title-mark title-mark--positive"></span>Positive signals</div>
+              <div id="positiveDrivers"></div>
+            </div>
+            <div class="surface">
+              <div class="card-title"><span class="title-mark title-mark--negative"></span>Negative signals</div>
+              <div id="negativeDrivers"></div>
+            </div>
+          </div>
+
+          <div class="results-detail-grid">
+            <div class="surface">
+              <div class="card-title"><span class="title-mark title-mark--warning"></span>Risks to review</div>
+              <div id="risksContainer"></div>
+            </div>
+
+            <div class="surface">
+              <div class="card-title"><span class="title-mark"></span>Assessment details</div>
+              <div class="meta-grid">
+                <div class="meta-item">
+                  <div class="meta-item__label">Data quality</div>
+                  <div class="meta-item__value" id="metaQuality">—</div>
+                </div>
+                <div class="meta-item">
+                  <div class="meta-item__label">Model confidence</div>
+                  <div class="meta-item__value" id="metaConfidence">—</div>
+                </div>
+              </div>
+              <div class="limitations-section">
+                <div class="limitations-title">Limitations</div>
+                <div id="limitationsContainer"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="action-card">
+            <div class="action-card__title">Recommended action</div>
+            <div class="action-card__text" id="actionText">—</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>Prototype model</span>
+      Trained on synthetic data and not validated for real-world onboarding decisions.
+    </footer>
+  </div>
+
+<!-- ==========================================================================
+     APPLICATION LOGIC
+     Handles API communication, DOM updates, and UI animations.
+     ========================================================================== -->
+<script>
+  const FIELDS = [
+    'handle', 'platform', 'followers',
+    'average_likes', 'average_comments', 'average_views',
+    'gcc_audience_pct', 'saudi_audience_pct', 'uae_audience_pct', 'female_audience_pct',
+    'beauty_content_pct', 'fashion_content_pct', 'luxury_content_pct', 'lifestyle_content_pct',
+    'sponsored_content_pct', 'content_consistency_score', 'comment_quality_score'
+  ];
+  const NUMBER_FIELDS = FIELDS.filter(f => f !== 'handle' && f !== 'platform');
+
+  const SAMPLE_DESCRIPTIONS = {
+    strong: "A GCC-based beauty and fashion influencer with strong engagement across Instagram. Known for authentic beauty tutorials, luxury hauls, and fashion lookbooks. Audience is predominantly female in Saudi Arabia and UAE. Content is consistent and high-quality with genuine comment interactions. Has done selective brand partnerships without over-commercializing her feed.",
+    weak: "A global lifestyle TikTok creator with a large international following but minimal presence in GCC markets. Content is mostly generic lifestyle vlogs and challenges. Heavy sponsorship activity with frequent branded posts. Low comment quality suggests passive audience engagement."
+  };
+
+  /**
+   * Fetches a pre-defined sample candidate from the backend API.
+   * This allows stakeholders to instantly test the scoring engine.
+   * @param {string} type - 'strong' or 'weak'
+   */
+  async function loadSample(type) {
+    try {
+      const res = await fetch('/api/sample/' + type);
+      const data = await res.json();
+      FIELDS.forEach(f => {
+        const el = document.getElementById(f);
+        if (el && data[f] !== undefined) el.value = data[f];
+      });
+      document.getElementById('description').value = SAMPLE_DESCRIPTIONS[type] || '';
+    } catch (err) {
+      showError('Failed to load sample data');
+    }
+  }
+
+  /**
+   * Submits the candidate profile to the scoring API and handles the response.
+   * Extracts values from the DOM, filters empty optional fields, and updates the UI.
+   * @param {Event} e - The form submission event
+   */
+  async function scoreCandidate(e) {
+    e.preventDefault();
+    const btn = document.getElementById('scoreBtn');
+    btn.classList.add('loading');
+    btn.setAttribute('aria-busy', 'true');
+    btn.textContent = 'Analyzing candidate…';
+
+    const payload = {};
+    payload.handle = document.getElementById('handle').value;
+    payload.platform = document.getElementById('platform').value;
+
+    NUMBER_FIELDS.forEach(f => {
+      const val = document.getElementById(f).value;
+      if (val !== '') payload[f] = parseFloat(val);
+    });
+
+    try {
+      const res = await fetch('/api/score', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (data.error) { showError(data.error); return; }
+      renderResults(data);
+    } catch (err) {
+      showError('Scoring request failed: ' + err.message);
+    } finally {
+      btn.classList.remove('loading');
+      btn.removeAttribute('aria-busy');
+      btn.innerHTML = 'Score candidate <span aria-hidden="true">→</span>';
+    }
+  }
+
+  /**
+   * Renders the complete scoring result to the DOM.
+   * Unhides the results panel and updates the gauge, drivers, and recommendations.
+   * @param {Object} data - The validated ScoringResult payload from the API
+   */
+  function renderResults(data) {
+    document.getElementById('placeholder').style.display = 'none';
+    const panel = document.getElementById('results');
+    panel.classList.remove('visible');
+    void panel.offsetWidth;
+    panel.classList.add('visible');
+
+    // Gauge
+    const score = data.score;
+    const circle = document.getElementById('gaugeCircle');
+    const circumference = 2 * Math.PI * 75;
+    const offset = circumference - (score / 100) * circumference;
+    circle.style.strokeDasharray = circumference;
+    circle.style.strokeDashoffset = offset;
+    circle.style.stroke = getScoreColor(score);
+
+    animateNumber('scoreNumber', score);
+
+    // Info
+    document.getElementById('resultHandle').textContent = data.handle;
+    document.getElementById('resultPlatform').textContent = capitalize(data.platform);
+    document.getElementById('resultProb').textContent = (data.success_probability * 100).toFixed(1) + '%';
+
+    // Badge
+    const badge = document.getElementById('recBadge');
+    badge.textContent = data.recommendation;
+    badge.className = 'recommendation-badge__tag ' + data.recommendation.toLowerCase();
+
+    const subtitles = {
+      ONBOARD: 'Strong Boutique fit — prioritize outreach',
+      HOLD: 'Promising but needs further evaluation',
+      PASS: 'Weak fit — do not allocate onboarding capacity'
+    };
+    document.getElementById('recSubtitle').textContent = subtitles[data.recommendation] || '';
+
+    // Description
+    const desc = document.getElementById('description').value.trim();
+    const descCard = document.getElementById('descriptionCard');
+    if (desc) {
+      document.getElementById('descriptionText').textContent = desc;
+      descCard.style.display = 'block';
+    } else {
+      descCard.style.display = 'none';
+    }
+
+    // Drivers
+    renderDrivers('positiveDrivers', data.positive_drivers, true);
+    renderDrivers('negativeDrivers', data.negative_drivers, false);
+
+    // Risks
+    document.getElementById('risksContainer').innerHTML = data.risks.map(r =>
+      '<div class="risk-item"><span class="risk-item__icon">⚠️</span>' + escapeHtml(r) + '</div>'
+    ).join('');
+
+    // Action
+    document.getElementById('actionText').textContent = data.next_action;
+
+    // Meta
+    document.getElementById('metaQuality').textContent = data.data_quality;
+    document.getElementById('metaConfidence').textContent = data.model_confidence;
+
+    // Limitations
+    document.getElementById('limitationsContainer').innerHTML = data.limitations.map(l =>
+      '<div class="limitation-item"><span>•</span>' + escapeHtml(l) + '</div>'
+    ).join('');
+
+    panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  /**
+   * Helper to render the explainability signals (positive/negative drivers).
+   * @param {string} containerId - DOM ID of the container
+   * @param {Array} drivers - List of driver objects from the API
+   * @param {boolean} isPositive - True if rendering positive drivers
+   */
+  function renderDrivers(containerId, drivers, isPositive) {
+    const container = document.getElementById(containerId);
+    if (!drivers || drivers.length === 0) {
+      container.innerHTML = '<div class="no-signals">No signals in this category</div>';
+      return;
+    }
+    container.innerHTML = drivers.map(d => {
+      const sign = d.contribution >= 0 ? '+' : '';
+      const cls = isPositive ? 'positive' : 'negative';
+      const icon = isPositive ? '✓' : '✗';
+      return '<div class="driver-item">' +
+        '<span class="driver-item__icon">' + icon + '</span>' +
+        '<span class="driver-item__text">' + escapeHtml(d.label) + '</span>' +
+        '<span class="driver-item__value ' + cls + '">' + sign + d.contribution.toFixed(1) + '</span>' +
+        '</div>';
+    }).join('');
+  }
+
+  function getScoreColor(score) {
+    if (score >= 70) return '#22d97f';
+    if (score >= 50) return '#ffb342';
+    return '#ff4466';
+  }
+
+  function animateNumber(elementId, target) {
+    const el = document.getElementById(elementId);
+    const duration = 1200;
+    const start = performance.now();
+    function tick(now) {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = Math.round(target * eased);
+      el.textContent = current;
+      el.style.color = getScoreColor(current);
+      if (progress < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+  function escapeHtml(str) {
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  function showError(msg) {
+    const existing = document.querySelector('.error-toast');
+    if (existing) existing.remove();
+    const toast = document.createElement('div');
+    toast.className = 'error-toast';
+    toast.textContent = '✗ ' + msg;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 5000);
+  }
+</script>
+
+</body>
+</html>

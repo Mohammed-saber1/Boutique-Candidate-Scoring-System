@@ -1,0 +1,20 @@
+{
+  "_note": "SYNTHETIC representative candidate — NOT a real Boutiqaat influencer",
+  "handle": "@synthetic_weak_candidate",
+  "platform": "tiktok",
+  "followers": 2100000,
+  "average_likes": 15000,
+  "average_comments": 200,
+  "average_views": 80000,
+  "gcc_audience_pct": 12,
+  "saudi_audience_pct": 5,
+  "uae_audience_pct": 3,
+  "female_audience_pct": 48,
+  "beauty_content_pct": 5,
+  "fashion_content_pct": 8,
+  "luxury_content_pct": 2,
+  "lifestyle_content_pct": 60,
+  "sponsored_content_pct": 55,
+  "content_consistency_score": 0.35,
+  "comment_quality_score": 0.30
+}
